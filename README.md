@@ -78,4 +78,4 @@ begin options
 end options
 ```
 
-This will print all available memory addresses in you list file.
+This will print all available memory addresses in you list file (When using BMI, this will be printed after the model is finalized!).
