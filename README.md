@@ -43,8 +43,8 @@ Julia as well as Wflow. It also has some basic tips on the usage of Julia as wel
 
 ### PyCall
 [PyCall](https://github.com/JuliaPy/PyCall.jl) is required to let 
-Julia call Python functions, but also to do the opposite, which is 
-what we are going to do. Installing PyCall by default installs 
+Julia call Python functions, but also to install Julia packages from Python, which is 
+what we might need. Installing PyCall by default installs 
 an extra conda installation, which seemed to confuse my computer.
 Therefore one can build PyCall against an existing Python environment.
 
