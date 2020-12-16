@@ -46,3 +46,18 @@ Pkg.build("PyCall")
 
 ### BMI
 The Julia [BasicModelInterface](https://github.com/Deltares/BasicModelInterface.jl) is used to access variables in Wflow. It can be called from Python with the above steps.
+
+# Modflow 6
+
+## Memory addresses
+Knowing which memory addresses are availalbe in Modflow 6 is hard to infer from the source
+code, therefore to print all available memory addresses in Modflow6, add this option in 
+your namfile:
+
+```
+begin options
+  memory_print_option all
+end options
+```
+
+This will print all available memory addresses in you list file.
