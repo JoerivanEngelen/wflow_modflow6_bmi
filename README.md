@@ -59,11 +59,57 @@ Pkg.build("PyCall")
 ```
 
 ### BMI
-The Julia [BasicModelInterface](https://github.com/Deltares/BasicModelInterface.jl) is used to access variables in Wflow. It can be called from Python with the above steps.
-
+The Julia [BasicModelInterface](https://github.com/Deltares/BasicModelInterface.jl) 
+is used to access variables in Wflow. 
+It can be called from Python with the  steps in the section .
 
 
 # Tips and tricks
+
+## Wflow
+
+### Simple tests
+You can download example test model files [here](https://github.com/visr/wflow-artifacts/releases/tag/v0.2.1). 
+Accessing Wflow states in Julia can be done as follows 
+(assuming the script is located in the same folder as the toml file):
+
+```julia
+using Wflow
+using BasicModelInterface
+const BMI = BasicModelInterface
+
+toml_path = joinpath(@__DIR__, "sbm_gwf_config.toml")
+
+model = BMI.initialize(Wflow.Model, toml_path)
+
+varnames = BMI.get_input_var_names(model)
+typ = BMI.get_var_type(model, "lateral.river.q")
+q = BMI.get_value_ptr(model, "lateral.river.q")
+BMI.update(model)
+print(q)
+```
+
+You can do the same in Python with pyjulia as follows:
+
+```python
+from julia import Wflow
+from julia import BasicModelInterface as BMI
+import os
+
+toml_path = os.path.join(__file__, "..", "sbm_gwf_config.toml")
+
+model = BMI.initialize(Wflow.Model, toml_path)
+
+varnames = BMI.get_input_var_names(model)
+typ = BMI.get_var_type(model, "lateral.river.q")
+q = BMI.get_value_ptr(model, "lateral.river.q")
+BMI.update(model)
+print(q)
+print(type(q))
+```
+
+In the last print statement you can also see Python sees and thus treats the
+data as a numpy array!
 
 ## Modflow 6
 
@@ -85,6 +131,15 @@ Fluxes are currently not available in the memory manager. You can however calcul
 budgets across the model boundary yourself. Below a proposed dataclass structure that sets out how to calculate these.
 
 ```python
+from xmipy import XmiWrapper
+import numpy as np
+
+from dataclasses import dataclass
+from typing import List
+
+FloatArray = np.ndarray
+IntArray = np.ndarray
+
 @dataclass
 class MF6_bound:
     """Boundary object that provides function to calculate boundary budget
@@ -116,8 +171,8 @@ class MF6_model:
     """
     model:      XmiWrapper
     modelname:  str
-    rivnames:   List[str]
-    drnnames:   List[str]
+    rivnames:   List[str] = ["RIV-1"] #Default ["RIV-1", "RIV-2" etc.]
+    drnnames:   List[str] = ["DRN-1"] #Default ["DRN-1", "DRN-2" etc.]
 
     def __post_init__(self)
         self.head   = self._get_ptr("X", self.modelname)
